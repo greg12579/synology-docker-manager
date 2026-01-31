@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synology Docker Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐳 Synology Docker Manager</h1>
+            <p class="subtitle">192.168.1.5 - Manage your Docker containers</p>
+            <button onclick="refreshContainers()" class="refresh-btn">🔄 Refresh</button>
+        </header>
+
+        <div id="container-list">
+            {% if containers %}
+                {% for container in containers %}
+                <div class="container-card" data-id="{{ container.id }}">
+                    <div class="container-header">
+                        <h2>{{ container.name }}</h2>
+                        <span class="status-badge status-{{ container.status }}">{{ container.status }}</span>
+                    </div>
+
+                    <div class="container-body">
+                        <p class="description">{{ container.description }}</p>
+
+                        <div class="info-row">
+                            <span class="label">Image:</span>
+                            <span class="value">{{ container.image }}</span>
+                        </div>
+
+                        {% if container.url %}
+                        <div class="info-row">
+                            <span class="label">URL:</span>
+                            <a href="{{ container.url }}" target="_blank" class="container-url">{{ container.url }}</a>
+                        </div>
+                        {% endif %}
+
+                        {% if container.ports %}
+                        <div class="ports-section">
+                            <span class="label">Ports:</span>
+                            <div class="ports-list">
+                                {% for port in container.ports %}
+                                <span class="port-badge">
+                                    {{ port.host_port }} → {{ port.container_port }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="container-actions">
+                        {% if container.status == 'running' %}
+                        <button onclick="stopContainer('{{ container.id }}')" class="btn btn-warning">⏸️ Stop</button>
+                        <button onclick="restartContainer('{{ container.id }}')" class="btn btn-info">🔄 Restart</button>
+                        {% else %}
+                        <button onclick="startContainer('{{ container.id }}')" class="btn btn-success">▶️ Start</button>
+                        {% endif %}
+                        <button onclick="updateContainer('{{ container.id }}')" class="btn btn-primary">⬆️ Update</button>
+                        <button onclick="regenerateDescription('{{ container.id }}')" class="btn btn-secondary">🤖 Regenerate Description</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-containers">
+                    <p>No containers found</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div id="notification" class="notification hidden"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

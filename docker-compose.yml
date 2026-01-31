@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  synology-docker-manager:
+    build: .
+    container_name: synology-docker-manager
+    ports:
+      - "80:80"
+    volumes:
+      # Mount Docker socket to manage containers
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      # Optional: Add your Anthropic API key for AI-generated descriptions
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - FLASK_DEBUG=False
+    restart: unless-stopped
+    labels:
+      - "app.description=Web interface for managing Synology Docker containers with AI-powered descriptions"
