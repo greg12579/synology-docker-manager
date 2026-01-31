@@ -10,60 +10,55 @@
     <div class="container">
         <header>
             <h1>🐳 Synology Docker Manager</h1>
-            <p class="subtitle">192.168.1.5 - Manage your Docker containers</p>
+            <p class="subtitle">192.168.1.5 - Docker Containers</p>
             <button onclick="refreshContainers()" class="refresh-btn">🔄 Refresh</button>
         </header>
 
         <div id="container-list">
             {% if containers %}
-                {% for container in containers %}
-                <div class="container-card" data-id="{{ container.id }}">
-                    <div class="container-header">
-                        <h2>{{ container.name }}</h2>
-                        <span class="status-badge status-{{ container.status }}">{{ container.status }}</span>
-                    </div>
-
-                    <div class="container-body">
-                        <p class="description">{{ container.description }}</p>
-
-                        <div class="info-row">
-                            <span class="label">Image:</span>
-                            <span class="value">{{ container.image }}</span>
-                        </div>
-
-                        {% if container.url %}
-                        <div class="info-row">
-                            <span class="label">URL:</span>
-                            <a href="{{ container.url }}" target="_blank" class="container-url">{{ container.url }}</a>
-                        </div>
-                        {% endif %}
-
-                        {% if container.ports %}
-                        <div class="ports-section">
-                            <span class="label">Ports:</span>
-                            <div class="ports-list">
-                                {% for port in container.ports %}
-                                <span class="port-badge">
-                                    {{ port.host_port }} → {{ port.container_port }}
-                                </span>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="container-actions">
-                        {% if container.status == 'running' %}
-                        <button onclick="stopContainer('{{ container.id }}')" class="btn btn-warning">⏸️ Stop</button>
-                        <button onclick="restartContainer('{{ container.id }}')" class="btn btn-info">🔄 Restart</button>
-                        {% else %}
-                        <button onclick="startContainer('{{ container.id }}')" class="btn btn-success">▶️ Start</button>
-                        {% endif %}
-                        <button onclick="updateContainer('{{ container.id }}')" class="btn btn-primary">⬆️ Update</button>
-                        <button onclick="regenerateDescription('{{ container.id }}')" class="btn btn-secondary">🤖 Regenerate Description</button>
-                    </div>
-                </div>
-                {% endfor %}
+                <table class="container-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Container</th>
+                            <th>Description</th>
+                            <th>URL</th>
+                            <th>Ports</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for container in containers %}
+                        <tr data-id="{{ container.id }}">
+                            <td class="status-cell">
+                                <span class="status-badge status-{{ container.status.split()[0].lower() }}">●</span>
+                            </td>
+                            <td>
+                                <div class="container-name">{{ container.name }}</div>
+                                <div class="container-image">{{ container.image }}</div>
+                            </td>
+                            <td class="description-cell">{{ container.description }}</td>
+                            <td>
+                                {% if container.url %}
+                                <a href="{{ container.url }}" target="_blank" class="container-url">{{ container.url }}</a>
+                                {% else %}
+                                <span class="no-url">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if container.ports %}
+                                <div class="ports-list">
+                                    {% for port in container.ports %}
+                                    <span class="port-badge">{{ port.host_port }} → {{ port.container_port.split('/')[0] }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <span class="no-ports">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% else %}
                 <div class="no-containers">
                     <p>No containers found</p>
