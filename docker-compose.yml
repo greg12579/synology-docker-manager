@@ -13,6 +13,8 @@ services:
       # Optional: Add your Anthropic API key for AI-generated descriptions
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - FLASK_DEBUG=False
+      # Unset DOCKER_HOST to use the mounted socket directly
+      - DOCKER_HOST=
     restart: unless-stopped
     labels:
       - "app.description=Web interface for managing Synology Docker containers with AI-powered descriptions"
